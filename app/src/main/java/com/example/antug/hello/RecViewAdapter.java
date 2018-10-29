@@ -9,9 +9,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 public class RecViewAdapter extends RecyclerView.Adapter<RecViewAdapter.MyViewHolder> {
-    private String[] myData;
+    private Movie[] myData;
 
-    public RecViewAdapter (String[] myData) {
+    public RecViewAdapter (Movie[] myData) {
         this.myData = myData;
     }
 
@@ -39,15 +39,18 @@ public class RecViewAdapter extends RecyclerView.Adapter<RecViewAdapter.MyViewHo
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder myViewHolder, int position) {
-        if (position % 2 == 0) {
+        /*if (position % 2 == 0) {
             myViewHolder.mImgView.setTag("https://assets.pokemon.com//assets//cms2//img//pokedex//full//041.png");
         } else {
             myViewHolder.mImgView.setTag("https://portalwonder.com.br//wp-content//uploads//2018//06//041_Zubat_ShinyOtm.png");
-        }
+        }*/
+
+        myViewHolder.mImgView.setTag(myData[position].getPosterURL());
 
         new DownloadImgAsync().execute(myViewHolder.mImgView);
 
-        myViewHolder.mTextView.setText(myData[position]);
+        myViewHolder.mTextView.setText(myData[position].getTitulo());
+
     }
 
     @Override

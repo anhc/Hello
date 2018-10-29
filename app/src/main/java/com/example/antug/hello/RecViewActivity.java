@@ -1,5 +1,6 @@
 package com.example.antug.hello;
 
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -13,8 +14,12 @@ public class RecViewActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private RecyclerView.Adapter recViewAdapter;
 
+    RequisicaoOMDB requisicaoOMDB;
+
     String[] myData = {"Australia", "Japan", "United States", "Canada", "France", "England", "Brazil", "China",
     "Corea", "Russia", "Argentina", "Italia", "Finland", "Germany"};
+
+    Movie[] movies;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,8 +32,18 @@ public class RecViewActivity extends AppCompatActivity {
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        recViewAdapter = new RecViewAdapter(myData);
-        recyclerView.setAdapter(recViewAdapter);
+        requisicaoOMDB = new RequisicaoOMDB(this);
+
+        requisicaoOMDB.fazRequest("batman");
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                movies = requisicaoOMDB.getMovies();
+                recViewAdapter = new RecViewAdapter(movies);
+                recyclerView.setAdapter(recViewAdapter);
+            }
+        }, 300);
     }
 
     public void textAdpClick (View view) {
