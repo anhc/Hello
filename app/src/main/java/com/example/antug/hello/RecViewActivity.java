@@ -8,6 +8,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class RecViewActivity extends AppCompatActivity {
 
@@ -43,12 +44,18 @@ public class RecViewActivity extends AppCompatActivity {
                 recViewAdapter = new RecViewAdapter(movies);
                 recyclerView.setAdapter(recViewAdapter);
             }
-        }, 300);
+        }, 1000);
     }
 
     public void textAdpClick (View view) {
 
         TextView tv = (TextView) view;
         Log.d("dwkadkwad", (String) tv.getText());
+        Toast.makeText(this, tv.getText(), Toast.LENGTH_SHORT).show();
+
+    }
+
+    public void clickFloatBtn (View view) {
+        Toast.makeText(this, "Click FAB", Toast.LENGTH_SHORT).show();
     }
 }
