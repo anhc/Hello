@@ -23,8 +23,8 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void callTheBest(View view) {
-        textView.setText("The Best");
+    public void clickBtnMain(View view) {
+        textView.setText("Changed");
         startActivity(intent);
     }
 }
