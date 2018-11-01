@@ -56,39 +56,37 @@ public class RecViewActivity extends AppCompatActivity {
         requisicaoOMDB.setJsonUrlRequest("batman");
 
         final JsonObjectRequest jsonObjRequest = new JsonObjectRequest
-                (Request.Method.GET, requisicaoOMDB.getJsonUrlRequest(), null, new Response.Listener<JSONObject>() {
+            (Request.Method.GET, requisicaoOMDB.getJsonUrlRequest(), null, new Response.Listener<JSONObject>() {
 
-                    @Override
-                    public void onResponse(JSONObject response) {
+            @Override
+            public void onResponse(JSONObject response) {
 
-                        try {
-                            JSONArray jsonArray = response.getJSONArray("Search");
+                try {
+                    JSONArray jsonArray = response.getJSONArray("Search");
 
-                            movies = requisicaoOMDB.fazRequest(jsonArray);
+                    movies = requisicaoOMDB.fazRequest(jsonArray);
 
-                            recViewAdapter = new RecViewAdapter(movies);
-                            recyclerView.setAdapter(recViewAdapter);
+                    recViewAdapter = new RecViewAdapter(movies);
+                    recyclerView.setAdapter(recViewAdapter);
 
-                        } catch(JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        error.printStackTrace();
-                    }
-                });
+                } catch(JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                error.printStackTrace();
+            }
+        });
 
         requestQueue.add(jsonObjRequest);
     }
 
     public void textAdpClick (View view) {
-
         TextView tv = (TextView) view;
         Log.d("dwkadkwad", (String) tv.getText());
         Toast.makeText(this, tv.getText(), Toast.LENGTH_SHORT).show();
-
     }
 
     public void clickFloatBtn (View view) {
