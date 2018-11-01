@@ -10,15 +10,27 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class RecViewActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
     private RecyclerView.Adapter recViewAdapter;
+    RequestQueue requestQueue;
 
     RequisicaoOMDB requisicaoOMDB;
 
-    String[] myData = {"Australia", "Japan", "United States", "Canada", "France", "England", "Brazil", "China",
-    "Corea", "Russia", "Argentina", "Italia", "Finland", "Germany"};
+    /*String[] myData = {"Australia", "Japan", "United States", "Canada", "France", "England", "Brazil", "China",
+    "Corea", "Russia", "Argentina", "Italia", "Finland", "Germany"};*/
 
     Movie[] movies;
 
@@ -33,18 +45,42 @@ public class RecViewActivity extends AppCompatActivity {
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        requisicaoOMDB = new RequisicaoOMDB(this);
+        requestQueue = Volley.newRequestQueue(this);
 
-        requisicaoOMDB.fazRequest("batman");
+        requisicaoOMDB = new RequisicaoOMDB();
 
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                movies = requisicaoOMDB.getMovies();
-                recViewAdapter = new RecViewAdapter(movies);
-                recyclerView.setAdapter(recViewAdapter);
-            }
-        }, 1000);
+        setRecViewMovies();
+    }
+
+    public void setRecViewMovies() {
+        requisicaoOMDB.setJsonUrlRequest("batman");
+
+        final JsonObjectRequest jsonObjRequest = new JsonObjectRequest
+                (Request.Method.GET, requisicaoOMDB.getJsonUrlRequest(), null, new Response.Listener<JSONObject>() {
+
+                    @Override
+                    public void onResponse(JSONObject response) {
+
+                        try {
+                            JSONArray jsonArray = response.getJSONArray("Search");
+
+                            movies = requisicaoOMDB.fazRequest(jsonArray);
+
+                            recViewAdapter = new RecViewAdapter(movies);
+                            recyclerView.setAdapter(recViewAdapter);
+
+                        } catch(JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        error.printStackTrace();
+                    }
+                });
+
+        requestQueue.add(jsonObjRequest);
     }
 
     public void textAdpClick (View view) {

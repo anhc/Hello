@@ -15,60 +15,39 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class RequisicaoOMDB {
-    RequestQueue requestQueue;
     String jsonUrlRequest;
     String apiKeyOMDB = "&apikey=96330142";
     Movie movies[];
-    boolean chegouResposta = false;
-
-    public RequisicaoOMDB(Context context) {
-        requestQueue = Volley.newRequestQueue(context);
-    }
 
     public void setJsonUrlRequest(String txtSearch) {
         jsonUrlRequest = "http://www.omdbapi.com/?s=" + txtSearch + apiKeyOMDB;
+    }
+
+    public String getJsonUrlRequest() {
+        return jsonUrlRequest;
     }
 
     public Movie[] getMovies() {
         return movies;
     }
 
-    public void fazRequest(String txtSearch) {
-        setJsonUrlRequest(txtSearch);
+    public Movie[] fazRequest(JSONArray jsonArray) {
 
-        final JsonObjectRequest jsonObjRequest = new JsonObjectRequest
-                (Request.Method.GET, jsonUrlRequest, null, new Response.Listener<JSONObject>() {
+        movies = new Movie[jsonArray.length()];
 
-                    @Override
-                    public void onResponse(JSONObject response) {
+        for (int i = 0; i < jsonArray.length(); i++) {
+            try {
+                JSONObject searchResult = jsonArray.getJSONObject(i);
 
-                        try {
-                            JSONArray jsonArray = response.getJSONArray("Search");
+                String titulo = searchResult.getString("Title");
+                String posterURL = searchResult.getString("Poster");
+                Log.d("RESPONSE REQ", "onResponse: " + titulo);
 
-                            movies = new Movie[jsonArray.length()];
-
-                            for(int i = 0; i < jsonArray.length(); i++) {
-                                JSONObject searchResult = jsonArray.getJSONObject(i);
-
-                                String titulo = searchResult.getString("Title");
-                                String posterURL = searchResult.getString("Poster");
-                                Log.d("RESPONSE REQ", "onResponse: " + titulo);
-
-                                movies[i] = new Movie(titulo, posterURL);
-
-                                chegouResposta = true;
-                            }
-                        } catch(JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        error.printStackTrace();
-                    }
-                });
-
-        requestQueue.add(jsonObjRequest);
+                movies[i] = new Movie(titulo, posterURL);
+            } catch(JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        return getMovies();
     }
 }
