@@ -1,12 +1,12 @@
 package com.example.antug.hello;
 
-import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.support.v7.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,7 +21,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class RecViewActivity extends AppCompatActivity {
+public class RecViewActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
 
     private RecyclerView recyclerView;
     private RecyclerView.Adapter recViewAdapter;
@@ -29,8 +29,7 @@ public class RecViewActivity extends AppCompatActivity {
 
     RequisicaoOMDB requisicaoOMDB;
 
-    /*String[] myData = {"Australia", "Japan", "United States", "Canada", "France", "England", "Brazil", "China",
-    "Corea", "Russia", "Argentina", "Italia", "Finland", "Germany"};*/
+    SearchView searchView;
 
     Movie[] movies;
 
@@ -49,38 +48,11 @@ public class RecViewActivity extends AppCompatActivity {
 
         requisicaoOMDB = new RequisicaoOMDB();
 
-        setRecViewMovies();
-    }
+        searchView = findViewById(R.id.recSearchView);
 
-    public void setRecViewMovies() {
-        requisicaoOMDB.setJsonUrlRequest("batman");
+        searchView.setOnQueryTextListener(this);
 
-        final JsonObjectRequest jsonObjRequest = new JsonObjectRequest
-            (Request.Method.GET, requisicaoOMDB.getJsonUrlRequest(), null, new Response.Listener<JSONObject>() {
-
-            @Override
-            public void onResponse(JSONObject response) {
-
-                try {
-                    JSONArray jsonArray = response.getJSONArray("Search");
-
-                    movies = requisicaoOMDB.fazRequest(jsonArray);
-
-                    recViewAdapter = new RecViewAdapter(movies);
-                    recyclerView.setAdapter(recViewAdapter);
-
-                } catch(JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                error.printStackTrace();
-            }
-        });
-
-        requestQueue.add(jsonObjRequest);
+        onQueryTextSubmit("batman");
     }
 
     public void textAdpClick (View view) {
@@ -91,5 +63,44 @@ public class RecViewActivity extends AppCompatActivity {
 
     public void clickFloatBtn (View view) {
         Toast.makeText(this, "Click FAB", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        requisicaoOMDB.setJsonUrlRequest(query);
+
+        final JsonObjectRequest jsonObjRequest = new JsonObjectRequest
+                (Request.Method.GET, requisicaoOMDB.getJsonUrlRequest(), null, new Response.Listener<JSONObject>() {
+
+                    @Override
+                    public void onResponse(JSONObject response) {
+
+                        try {
+                            JSONArray jsonArray = response.getJSONArray("Search");
+
+                            movies = requisicaoOMDB.fazRequest(jsonArray);
+
+                            recViewAdapter = new RecViewAdapter(movies);
+                            recyclerView.setAdapter(recViewAdapter);
+
+                        } catch(JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        error.printStackTrace();
+                    }
+                });
+
+        requestQueue.add(jsonObjRequest);
+
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        return false;
     }
 }
